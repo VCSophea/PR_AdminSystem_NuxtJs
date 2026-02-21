@@ -1,37 +1,32 @@
 // stores/auth.store.ts
 import { defineStore } from "pinia";
-import type { AuthUser, ModuleType } from "~/types/permission.types";
+import type { AuthUser } from "~/types";
 
-export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    user: null as AuthUser | null,
-    accessToken: "" as string,
-  }),
+export const useAuthStore = defineStore(
+  "auth",
+  () => {
+    // * State
+    const user = ref<AuthUser | null>(null);
+    const accessToken = ref("");
 
-  getters: {
-    // Flat list of all 'type' values where checked === true
-    permittedTypes: (state): string[] => {
-      if (!state.user) return [];
-      return state.user.moduleTypeList.flatMap((mt) => mt.moduleList.filter((m) => m.checked).map((m) => m.type));
-    },
+    // * Getters
+    const moduleTypeList = computed(() => user.value?.moduleTypeList || []);
+    const isLoggedIn = computed(() => !!user.value && !!accessToken.value);
+    const fullName = computed(() => (user.value ? `${user.value.firstName} ${user.value.lastName}` : ""));
+    const isSuperAdmin = computed(() => user.value?.isSuperAdmin === 1);
 
-    moduleTypeList: (state): ModuleType[] => state.user?.moduleTypeList ?? [],
+    // * Actions
+    const setAuth = (newUser: AuthUser, token: string) => {
+      user.value = newUser;
+      accessToken.value = token;
+    };
 
-    isLoggedIn: (state): boolean => !!state.user && !!state.accessToken,
+    const clearAuth = () => {
+      user.value = null;
+      accessToken.value = "";
+    };
 
-    fullName: (state): string => (state.user ? `${state.user.firstName} ${state.user.lastName}` : ""),
+    return { user, accessToken, moduleTypeList, isLoggedIn, fullName, isSuperAdmin, setAuth, clearAuth };
   },
-
-  actions: {
-    setAuth(user: AuthUser, token: string) {
-      this.user = user;
-      this.accessToken = token;
-    },
-    clearAuth() {
-      this.user = null;
-      this.accessToken = "";
-    },
-  },
-
-  persist: true,
-});
+  { persist: true },
+);

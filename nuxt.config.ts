@@ -4,8 +4,26 @@ export default defineNuxtConfig({
   srcDir: ".",
   devtools: { enabled: true },
   typescript: { strict: true },
+  devServer: {
+    port: 3005,
+    host: "localhost",
+  },
 
-  modules: ["@primevue/nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "nuxt-auth-utils"],
+  modules: ["@primevue/nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "nuxt-auth-utils", "@nuxtjs/i18n", "@nuxt/icon"],
+
+  i18n: {
+    locales: [
+      { code: "en", language: "en-US", file: "en.json", name: "English" },
+      { code: "km", language: "km-KH", file: "km.json", name: "ខ្មែរ" },
+    ],
+    defaultLocale: "en",
+    strategy: "no_prefix",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+      fallbackLocale: "en",
+    },
+  },
 
   primevue: {
     options: {
@@ -23,6 +41,15 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ["./stores/**"],
   },
+
+  imports: {
+    dirs: ["composables/**", "features/**"],
+  },
+
+  components: [
+    { path: "~/components", pathPrefix: false },
+    { path: "./features", pathPrefix: false },
+  ],
 
   css: ["~/assets/css/main.css"],
 

@@ -1,68 +1,110 @@
-<!-- pages/login.vue -->
 <script setup lang="ts">
-import { useForm, useField } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { z } from "zod";
+import { useForm } from "vee-validate";
+import { useAuth } from "~/features/auth/auth.composable";
+import { createLoginSchema } from "~/features/auth/auth.schema";
 
 definePageMeta({ layout: "auth" });
+const { t } = useI18n();
 
-const schema = toTypedSchema(
-  z.object({
-    username: z.string().min(1, "Username is required"),
-    password: z.string().min(1, "Password is required"),
-  }),
-);
+const schema = toTypedSchema(createLoginSchema(t));
 
-const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema });
-const { value: username } = useField<string>("username");
-const { value: password } = useField<string>("password");
-
-const authStore = useAuthStore();
-const { api } = useApi();
-const router = useRouter();
-const toast = useToast();
+const { handleSubmit, isSubmitting } = useForm({ validationSchema: schema });
+const { login: executeLogin } = useAuth();
+const loginError = ref("");
 
 const onSubmit = handleSubmit(async (values) => {
+  loginError.value = "";
   try {
-    // 1. Login to get token
-    const loginRes = await api.post("/auth/login", values);
-    const token = loginRes.data.body.accessToken;
-
-    // 2. Call /me with the token
-    const meRes = await api.get("/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    // 3. Save to Pinia (persisted)
-    authStore.setAuth(meRes.data.body, token);
-
-    // 4. Go to dashboard
-    await router.push("/");
-  } catch (err) {
-    // We will use standard alert or PrimeVue toast context if available
-    alert("Login Failed: Invalid username or password");
+    await executeLogin(values);
+  } catch (error: any) {
+    loginError.value = error?.message || "Invalid username or password";
   }
 });
 </script>
 
 <template>
-  <div class="w-full max-w-md p-8 bg-[var(--surface-card)] rounded-2xl shadow-lg">
-    <div class="flex justify-center mb-6">
-      <img src="~/assets/images/logo.webp" alt="Logo" class="h-12" />
+  <div class="login-card">
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ $t("welcome") }}</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $t("login_subtitle") }}</p>
     </div>
-    <h1 class="text-2xl font-bold text-center mb-8 text-[var(--text-primary)]">Sign In</h1>
-    <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-[var(--text-secondary)]">Username</label>
-        <InputText v-model="username" placeholder="Enter username" :invalid="!!errors.username" class="w-full" />
-        <small class="text-red-500" v-if="errors.username">{{ errors.username }}</small>
+
+    <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
+      <AppFormField name="username" :label="$t('username')" required :placeholder="$t('placeholder_username')" icon="pi pi-user" glass />
+      <AppFormField name="password" type="password" :label="$t('password')" required :placeholder="$t('placeholder_password')" glass />
+
+      <div v-if="loginError" class="error-banner">
+        <i class="pi pi-exclamation-circle text-sm shrink-0"></i>
+        <span class="text-xs font-semibold leading-tight">{{ loginError }}</span>
       </div>
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-[var(--text-secondary)]">Password</label>
-        <Password v-model="password" placeholder="Enter password" :feedback="false" toggleMask :invalid="!!errors.password" class="w-full" />
-        <small class="text-red-500" v-if="errors.password">{{ errors.password }}</small>
-      </div>
-      <Button type="submit" label="Sign In" :loading="isSubmitting" class="w-full mt-2" />
+
+      <button type="submit" :disabled="isSubmitting" class="login-btn mt-1">
+        <i v-if="isSubmitting" class="pi pi-spin pi-spinner mr-2"></i>
+        {{ $t("login_button") }}
+      </button>
     </form>
+
+    <div class="mt-6 text-center text-[11px] text-gray-400 dark:text-gray-500">
+      <p>{{ $t("powered_by") }} <span class="font-semibold text-gray-500 dark:text-gray-400">UDAYA TECHNOLOGY Co., Ltd.</span></p>
+      <p class="mt-0.5">{{ $t("version") }} 1.08</p>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.login-card {
+  padding: 2rem;
+  border-radius: 1.25rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-card-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-error);
+  backdrop-filter: blur(4px);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 188, 212, 0.4);
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+.login-btn:hover {
+  background: var(--color-accent-hover);
+}
+.login-btn:active {
+  transform: scale(0.98);
+}
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+</style>

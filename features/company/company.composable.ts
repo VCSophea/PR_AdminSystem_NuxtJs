@@ -1,0 +1,54 @@
+// features/company/company.composable.ts
+import { useCompanyApi } from "./company.api";
+import type { CompanyFormInput } from "./company.schema";
+import type { Company } from "./company.types";
+
+// * Company Logic
+export const useCompany = () => {
+  const api = useCompanyApi();
+  const companies = ref<Company[]>([]);
+  const totalCount = ref(0);
+  const page = ref(0),
+    rowsPerPage = ref(10),
+    searchText = ref("");
+
+  // * Async Data Pulse
+  const { data, status, refresh } = useAsyncData(
+    "companies",
+    () =>
+      api.list({
+        page: page.value + 1,
+        rowsPerPage: rowsPerPage.value,
+        searchText: searchText.value,
+      }),
+    { watch: [page, rowsPerPage, searchText] },
+  );
+
+  // * Sync State
+  watch(
+    data,
+    (v) => {
+      if (v?.body) {
+        companies.value = v.body.data || [];
+        totalCount.value = v.body.pagination?.total || 0;
+      }
+    },
+    { immediate: true },
+  );
+
+  const fetchAll = () => refresh();
+  const create = async (v: CompanyFormInput) => {
+    await api.create(v);
+    await fetchAll();
+  };
+  const remove = async (id: number) => {
+    await api.remove(id);
+    await fetchAll();
+  };
+  const toggleStatus = async (id: number, s: boolean) => {
+    await api.toggleStatus(id, s);
+    await fetchAll();
+  };
+
+  return { companies, totalCount, page, rowsPerPage, searchText, fetchAll, create, remove, toggleStatus, isLoading: computed(() => status.value === "pending") };
+};

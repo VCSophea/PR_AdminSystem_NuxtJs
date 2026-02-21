@@ -5,7 +5,6 @@ export default defineNuxtRouteMiddleware((to) => {
   const publicRoutes = ["/login", "/403"];
   if (publicRoutes.includes(to.path)) return;
 
-  if (!authStore.isLoggedIn) {
-    return navigateTo("/login");
-  }
+  // * Redirect unauthenticated users to login
+  if (!authStore.isLoggedIn) return navigateTo("/login");
 });
