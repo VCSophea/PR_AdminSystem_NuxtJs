@@ -1,0 +1,39 @@
+/* assets/css/theme.css */
+
+:root {
+  /* Company Brand — change these to match your brand */
+  --brand-primary: #0369a1;
+  --brand-primary-dark: #0284c7;
+  --brand-accent: #0ea5e9;
+  --brand-sidebar-bg: #0c4a6e;
+  --brand-sidebar-text: #e0f2fe;
+  --brand-logo-height: 48px;
+
+  /* Light mode surfaces */
+  --surface-bg: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+}
+
+.dark {
+  /* Dark mode surfaces */
+  --surface-bg: #0f172a;
+  --surface-card: #1e293b;
+  --surface-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+}
+
+/* Sidebar */
+.app-sidebar {
+  background-color: var(--brand-sidebar-bg);
+  color: var(--brand-sidebar-text);
+}
+
+/* Logo */
+.app-logo {
+  height: var(--brand-logo-height);
+  object-fit: contain;
+}
