@@ -91,7 +91,7 @@ const visibleMenu = computed(() => menuItems.filter((item) => hasPermission(item
 <template>
   <aside class="app-sidebar w-56 flex flex-col shrink-0">
     <div class="p-4 flex items-center justify-center border-b border-white/10">
-      <img src="~/assets/images/logo.png" alt="Logo" class="app-logo" />
+      <img src="~/assets/images/logo.webp" alt="Logo" class="app-logo" />
     </div>
     <nav class="flex-1 overflow-y-auto py-4">
       <NuxtLink v-for="item in visibleMenu" :key="item.path" :to="item.path" class="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-white/10 rounded-lg mx-2 [&.router-link-active]:bg-white/20 [&.router-link-active]:font-semibold">

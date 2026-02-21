@@ -1,5 +1,5 @@
 {
-  "name": "my-admin-system",
+  "name": "admin-system",
   "type": "module",
   "private": true,
   "scripts": {

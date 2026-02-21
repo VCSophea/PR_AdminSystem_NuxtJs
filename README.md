@@ -34,7 +34,7 @@ A production-ready robust admin dashboard built with Nuxt 3 and PrimeVue. The pr
 ## 📂 Project Structure
 
 ```text
-my-admin-system/
+admin-system/
 ├── assets/
 │   ├── css/              # Tailwind directives and company brand theme variables
 │   └── images/           # Static assets like logo

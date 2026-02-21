@@ -48,7 +48,7 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <div class="w-full max-w-md p-8 bg-[var(--surface-card)] rounded-2xl shadow-lg">
     <div class="flex justify-center mb-6">
-      <img src="~/assets/images/logo.png" alt="Logo" class="h-12" />
+      <img src="~/assets/images/logo.webp" alt="Logo" class="h-12" />
     </div>
     <h1 class="text-2xl font-bold text-center mb-8 text-[var(--text-primary)]">Sign In</h1>
     <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
