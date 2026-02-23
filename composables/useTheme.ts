@@ -13,8 +13,8 @@ export function useTheme() {
   };
 
   onMounted(() => {
-    const saved = localStorage.getItem("theme");
-    isDark.value = saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    // * Default is light; only switch to dark if user previously chose dark
+    isDark.value = localStorage.getItem("theme") === "dark";
     applyTheme();
   });
 

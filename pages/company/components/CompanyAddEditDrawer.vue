@@ -1,45 +1,42 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { computed, ref, watch } from "vue";
-import { companySchema, type CompanyFormInput } from "../company.schema";
-import type { Company } from "../company.types";
+import type { Company } from "~/types";
+import { companySchema } from "~/utils/shared/schemas";
 
 const activeTab = ref("overview");
 const props = defineProps<{ visible: boolean; company?: Company | null }>();
 const emit = defineEmits(["update:visible", "saved"]);
 const isEdit = computed(() => !!props.company);
 
-const { handleSubmit, resetForm, isSubmitting, setFieldValue, values: formValues } = useForm<CompanyFormInput>({ validationSchema: toTypedSchema(companySchema), initialValues: { isActive: true } });
+const { handleSubmit, resetForm, isSubmitting, setFieldValue, values: formValues } = useForm({ validationSchema: toTypedSchema(companySchema), initialValues: { isActive: true } });
 watch(
   () => props.visible,
   (val) => val && resetForm({ values: props.company ? { ...props.company, logo: undefined } : { name: "", description: "", contactPerson: "", email: "", phone: "", isActive: true, logo: undefined } }),
 );
 
-const onSubmit = handleSubmit(async (v) => emit("saved", v));
+const onSubmit = handleSubmit(async (v: any) => emit("saved", v));
 const close = () => emit("update:visible", false);
 </script>
 
 <template>
-  <Drawer :visible="visible" @update:visible="emit('update:visible', $event)" position="right" :modal="true" :dismissable="true" class="!w-full md:!w-80 lg:!w-[30rem] !bg-white dark:!bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 p-4" header=" ">
+  <Drawer :visible="visible" @update:visible="emit('update:visible', $event)" position="right" class="!w-full md:!w-80 lg:!w-[30rem] glass-drawer" header=" ">
     <template #header>
       <div class="flex flex-col gap-1 pr-4">
-        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-          {{ isEdit ? "Edit Company" : "Add New Company" }}
-        </h2>
+        <h2 class="text-xl font-bold tracking-tight">{{ isEdit ? "Edit Company" : "Add New Company" }}</h2>
       </div>
     </template>
 
     <div class="flex flex-col h-full -mt-4">
       <!-- Tabs -->
-      <div class="flex items-center gap-6 border-b border-zinc-100 dark:border-zinc-800 mb-6 shrink-0">
-        <button v-for="tab in ['overview', 'settings']" :key="tab" @click="activeTab = tab" class="pb-3 text-xs font-bold uppercase tracking-widest transition-all relative" :class="activeTab === tab ? 'text-[var(--color-primary)]' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200'">
+      <div class="flex items-center gap-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
+        <button v-for="tab in ['Overview', 'Settings']" :key="tab" @click="activeTab = tab" class="pb-3 text-xs font-bold uppercase tracking-widest transition-all relative" :class="activeTab === tab ? 'text-[var(--color-primary)]' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200'">
           {{ tab }}
           <div v-if="activeTab === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-primary)] rounded-full"></div>
         </button>
       </div>
 
-      <div class="flex-1 overflow-y-auto pr-1">
+      <div class="flex-1 overflow-y-auto pr-1 pt-4">
         <form @submit="onSubmit" id="company-form">
           <!-- Overview Tab -->
           <div v-show="activeTab === 'overview'" class="space-y-4">
@@ -83,14 +80,30 @@ const close = () => emit("update:visible", false);
 </template>
 
 <style scoped>
+.glass-drawer {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border-left: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-card-shadow) !important;
+}
+
 :deep(.p-drawer-content) {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  background: transparent !important;
 }
+
 :deep(.p-drawer-header) {
   padding: 1.5rem;
-  border-bottom: 1px solid var(--sidebar-border);
+  border-bottom: 1px solid var(--glass-border);
+  background: transparent !important;
+}
+
+/* * Shorter logic styling */
+.glass-drawer form {
+  @apply flex flex-col h-full;
 }
 
 /* Backdrop blur effect on the mask overlay */

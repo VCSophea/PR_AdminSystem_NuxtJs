@@ -1,39 +1,45 @@
 <script setup lang="ts">
-import NewsFeedAddEditDrawer from "~/features/news-feed/components/NewsFeedAddEditDrawer.vue";
 import { useNewsFeed } from "~/features/news-feed/news-feed.composable";
-import type { NewsFeedFormInput } from "~/features/news-feed/news-feed.schema";
-import type { NewsFeed } from "~/features/news-feed/news-feed.types";
+import type { NewsFeed } from "~/types";
+import { type NewsFeedFormInput } from "~/utils/shared/schemas";
+import NewsFeedAddEditDrawer from "./components/NewsFeedAddEditDrawer.vue";
 
 // * Navigation Meta
 definePageMeta({ middleware: ["permission"], requiredModule: "News Feed" });
 
 // * State & Logic
-const { list, total, page, rowsPerPage, searchText, fetch, create, update, remove, toggle, isLoading } = useNewsFeed();
+const { items, total, isLoading, page, rowsPerPage, search, refresh, create, update, remove } = useNewsFeed();
 const { hasPermission } = usePermission();
 
-const showDrawer = ref(false);
-const selectedItem = ref<NewsFeed | null>(null);
-const localSearch = ref("");
-
-const actionMenu = ref();
-const activeItem = ref<NewsFeed | null>(null);
+// * UI State
+const showDrawer = ref(false),
+  selectedItem = ref<NewsFeed | null>(null),
+  localSearch = ref(""),
+  selectedRows = ref<NewsFeed[]>([]);
+const actionMenu = ref(),
+  activeItem = ref<NewsFeed | null>(null);
 
 const actionItems = computed(() => [
   { label: "Edit", icon: "mdi:pencil-outline", visible: hasPermission("News Feed", "EDIT"), command: () => activeItem.value && handleEdit(activeItem.value) },
   { label: "Delete", icon: "mdi:delete-outline", visible: hasPermission("News Feed", "DELETE"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
 ]);
 
-// * Handlers
+const toggleActionMenu = (e: Event, i: NewsFeed) => {
+  activeItem.value = i;
+  actionMenu.value.toggle(e);
+};
+
+// * Logic
 const onSearch = () => {
-  searchText.value = localSearch.value;
+  search.value = localSearch.value;
   page.value = 0;
 };
 const handleAdd = () => {
   selectedItem.value = null;
   showDrawer.value = true;
 };
-const handleEdit = (item: NewsFeed) => {
-  selectedItem.value = item;
+const handleEdit = (i: NewsFeed) => {
+  selectedItem.value = i;
   showDrawer.value = true;
 };
 const handleSave = async (v: NewsFeedFormInput) => {
@@ -41,7 +47,7 @@ const handleSave = async (v: NewsFeedFormInput) => {
   showDrawer.value = false;
 };
 
-onMounted(() => fetch());
+onMounted(() => refresh());
 </script>
 
 <template>
@@ -65,7 +71,7 @@ onMounted(() => fetch());
     <!-- Content -->
     <div class="flex-1 overflow-hidden bg-white dark:bg-zinc-950 rounded-xl border shadow-sm flex flex-col">
       <div class="flex-1 overflow-y-auto">
-        <DataTable :value="list" :loading="isLoading" class="p-datatable-sm" stripedRows>
+        <DataTable :value="items" :loading="isLoading" class="p-datatable-sm" stripedRows>
           <Column field="title" header="Title" class="font-bold text-[13px] px-4">
             <template #body="{ data }">
               <span class="truncate max-w-[300px] block">{{ data.title }}</span>

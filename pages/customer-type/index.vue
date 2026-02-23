@@ -1,39 +1,45 @@
 <script setup lang="ts">
-import CustomerTypeAddEditDrawer from "~/features/customer-type/components/CustomerTypeAddEditDrawer.vue";
 import { useCustomerType } from "~/features/customer-type/customer-type.composable";
-import type { CustomerTypeFormInput } from "~/features/customer-type/customer-type.schema";
-import type { CustomerType } from "~/features/customer-type/customer-type.types";
+import type { CustomerType } from "~/types";
+import { type CustomerTypeFormInput } from "~/utils/shared/schemas";
+import CustomerTypeAddEditDrawer from "./components/CustomerTypeAddEditDrawer.vue";
 
 // * Navigation Meta
 definePageMeta({ middleware: ["permission"], requiredModule: "Customer Type" });
 
 // * State & Logic
-const { list, total, page, rowsPerPage, searchText, fetch, create, update, remove, toggle, isLoading } = useCustomerType();
+const { items, total, isLoading, page, rowsPerPage, search, refresh, create, update, remove } = useCustomerType();
 const { hasPermission } = usePermission();
 
-const showDrawer = ref(false);
-const selectedItem = ref<CustomerType | null>(null);
-const localSearch = ref("");
-
-const actionMenu = ref();
-const activeItem = ref<CustomerType | null>(null);
+// * UI State
+const showDrawer = ref(false),
+  selectedItem = ref<CustomerType | null>(null),
+  localSearch = ref(""),
+  selectedRows = ref<CustomerType[]>([]);
+const actionMenu = ref(),
+  activeItem = ref<CustomerType | null>(null);
 
 const actionItems = computed(() => [
   { label: "Edit", icon: "mdi:pencil-outline", visible: hasPermission("Customer Type", "EDIT"), command: () => activeItem.value && handleEdit(activeItem.value) },
   { label: "Delete", icon: "mdi:delete-outline", visible: hasPermission("Customer Type", "DELETE"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
 ]);
 
-// * Handlers
+const toggleActionMenu = (e: Event, i: CustomerType) => {
+  activeItem.value = i;
+  actionMenu.value.toggle(e);
+};
+
+// * Logic
 const onSearch = () => {
-  searchText.value = localSearch.value;
+  search.value = localSearch.value;
   page.value = 0;
 };
 const handleAdd = () => {
   selectedItem.value = null;
   showDrawer.value = true;
 };
-const handleEdit = (item: CustomerType) => {
-  selectedItem.value = item;
+const handleEdit = (i: CustomerType) => {
+  selectedItem.value = i;
   showDrawer.value = true;
 };
 const handleSave = async (v: CustomerTypeFormInput) => {
@@ -41,7 +47,7 @@ const handleSave = async (v: CustomerTypeFormInput) => {
   showDrawer.value = false;
 };
 
-onMounted(() => fetch());
+onMounted(() => refresh());
 </script>
 
 <template>
@@ -65,7 +71,7 @@ onMounted(() => fetch());
     <!-- Content -->
     <div class="flex-1 overflow-hidden bg-white dark:bg-zinc-950 rounded-xl border shadow-sm flex flex-col">
       <div class="flex-1 overflow-y-auto">
-        <DataTable :value="list" :loading="isLoading" class="p-datatable-sm" stripedRows>
+        <DataTable :value="items" :loading="isLoading" class="p-datatable-sm" stripedRows>
           <Column field="name" header="Name" class="font-bold text-[13px] px-4" />
           <Column field="nameOther" header="Name (Other)" class="text-[13px] text-zinc-500 px-4" />
           <Column header="Status" class="px-4">

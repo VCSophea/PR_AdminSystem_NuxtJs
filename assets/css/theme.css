@@ -5,10 +5,10 @@
  */
 :root {
   /* === Brand === */
-  --color-primary: #008f39; /* main green */
-  --color-primary-hover: #00702d;
-  --color-accent: #00bcd4; /* teal */
-  --color-accent-hover: #00a5bb;
+  --color-primary: var(--p-primary-color);
+  --color-primary-hover: var(--p-primary-600);
+  --color-accent: var(--p-primary-color); /* Linked to primary for consistency */
+  --color-accent-hover: var(--p-primary-600);
 
   /* === Surfaces (Zinc-based) === */
   --color-bg: #ffffff;
@@ -40,7 +40,7 @@
   --input-border: #e4e4e7;
   --input-text: #09090b;
   --input-radius: 0.5rem;
-  --input-padding: 0.5rem 0.75rem;
+  --input-padding: 0.75rem 0.875rem;
   --input-font-size: 0.875rem;
 }
 

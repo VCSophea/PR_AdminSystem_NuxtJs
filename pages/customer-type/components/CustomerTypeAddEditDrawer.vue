@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { serviceTypeSchema, type ServiceTypeFormInput } from "../service-type.schema";
-import type { ServiceType } from "../service-type.types";
+import type { CustomerType } from "~/types";
+import { customerTypeSchema } from "~/utils/shared/schemas";
 
-const props = defineProps<{ visible: boolean; item?: ServiceType | null }>();
+const props = defineProps<{ visible: boolean; item?: CustomerType | null }>();
 const emit = defineEmits(["update:visible", "saved"]);
 
 // * Setup Form
-const { handleSubmit, resetForm, isSubmitting, values } = useForm<ServiceTypeFormInput>({
-  validationSchema: toTypedSchema(serviceTypeSchema),
+const { handleSubmit, resetForm, isSubmitting, setFieldValue, values } = useForm({
+  validationSchema: toTypedSchema(customerTypeSchema),
   initialValues: { isActive: true },
 });
 
@@ -21,15 +21,15 @@ watch(
   },
 );
 
-const onSubmit = handleSubmit(async (v) => emit("saved", v));
+const onSubmit = handleSubmit(async (v: any) => emit("saved", v));
 const close = () => emit("update:visible", false);
 </script>
 
 <template>
-  <Drawer :visible="visible" @update:visible="close" position="right" class="w-full md:w-[450px]" header="Service Type">
+  <Drawer :visible="visible" @update:visible="close" position="right" class="!w-full md:!w-[450px] glass-drawer" header="Customer Type">
     <form @submit="onSubmit" class="flex flex-col h-full space-y-6">
       <div class="flex-1 space-y-5">
-        <AppFormField name="name" label="Name" required placeholder="Service name" />
+        <AppFormField name="name" label="Name" required placeholder="Type name" />
         <AppFormField name="nameOther" label="Name (Other)" placeholder="Alternative name" />
         <AppFormField name="description" label="Description" type="textarea" :rows="3" />
 
@@ -48,3 +48,19 @@ const close = () => emit("update:visible", false);
     </form>
   </Drawer>
 </template>
+
+<style scoped>
+.glass-drawer {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border-left: 1px solid var(--glass-border) !important;
+}
+:deep(.p-drawer-content) {
+  background: transparent !important;
+}
+:deep(.p-drawer-header) {
+  background: transparent !important;
+  border-bottom: 1px solid var(--glass-border);
+}
+</style>

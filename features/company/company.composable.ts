@@ -1,7 +1,6 @@
-// features/company/company.composable.ts
+import type { Company } from "~/types";
+import { type CompanyFormInput } from "~/utils/shared/schemas";
 import { useCompanyApi } from "./company.api";
-import type { CompanyFormInput } from "./company.schema";
-import type { Company } from "./company.types";
 
 // * Company Logic
 export const useCompany = () => {
@@ -36,19 +35,22 @@ export const useCompany = () => {
     { immediate: true },
   );
 
-  const fetchAll = () => refresh();
   const create = async (v: CompanyFormInput) => {
-    await api.create(v);
-    await fetchAll();
+    const fd = new FormData();
+    Object.entries(v).forEach(([k, val]) => {
+      if (val !== undefined) fd.append(k, val as any);
+    });
+    await api.create(fd);
+    await refresh();
   };
   const remove = async (id: number) => {
     await api.remove(id);
-    await fetchAll();
+    await refresh();
   };
   const toggleStatus = async (id: number, s: boolean) => {
     await api.toggleStatus(id, s);
-    await fetchAll();
+    await refresh();
   };
 
-  return { companies, totalCount, page, rowsPerPage, searchText, fetchAll, create, remove, toggleStatus, isLoading: computed(() => status.value === "pending") };
+  return { companies, totalCount, page, rowsPerPage, searchText, refresh, create, remove, toggleStatus, isLoading: computed(() => status.value === "pending") };
 };

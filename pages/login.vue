@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { useAuth } from "~/features/auth/auth.composable";
-import { createLoginSchema } from "~/features/auth/auth.schema";
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
+import { useAuth } from "~/features/auth/auth.composable"
+import { createLoginSchema } from "~/utils/shared/schemas"
 
-definePageMeta({ layout: "auth" });
-const { t } = useI18n();
+definePageMeta({ layout: "auth" })
+const { t } = useI18n()
 
-const schema = toTypedSchema(createLoginSchema(t));
+const schema = toTypedSchema(createLoginSchema(t))
 
-const { handleSubmit, isSubmitting } = useForm({ validationSchema: schema });
-const { login: executeLogin } = useAuth();
-const loginError = ref("");
+const { handleSubmit, isSubmitting } = useForm({ validationSchema: schema })
+const { login: executeLogin } = useAuth()
+const loginError = ref("")
 
 const onSubmit = handleSubmit(async (values) => {
-  loginError.value = "";
+  loginError.value = ""
   try {
-    await executeLogin(values);
+    await executeLogin(values)
   } catch (error: any) {
-    loginError.value = error?.message || "Invalid username or password";
+    const backendMessage =
+      error?.response?.data?.body?.message || error?.response?.data?.message || error?.message
+    loginError.value = backendMessage || "Invalid username or password"
   }
-});
+})
 </script>
 
 <template>
@@ -31,8 +33,23 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
-      <AppFormField name="username" :label="$t('username')" required :placeholder="$t('placeholder_username')" icon="pi pi-user" glass />
-      <AppFormField name="password" type="password" :label="$t('password')" required :placeholder="$t('placeholder_password')" glass />
+      <AppFormField
+        name="username"
+        :label="$t('username')"
+        required
+        :placeholder="$t('placeholder_username')"
+        icon="pi pi-user"
+        glass
+      />
+      <AppFormField
+        name="password"
+        type="password"
+        :label="$t('password')"
+        required
+        :placeholder="$t('placeholder_password')"
+        icon="pi pi-lock"
+        glass
+      />
 
       <div v-if="loginError" class="error-banner">
         <i class="pi pi-exclamation-circle text-sm shrink-0"></i>
@@ -46,7 +63,12 @@ const onSubmit = handleSubmit(async (values) => {
     </form>
 
     <div class="mt-6 text-center text-[11px] text-gray-400 dark:text-gray-500">
-      <p>{{ $t("powered_by") }} <span class="font-semibold text-gray-500 dark:text-gray-400">UDAYA TECHNOLOGY Co., Ltd.</span></p>
+      <p>
+        {{ $t("powered_by") }}
+        <span class="font-semibold text-gray-500 dark:text-gray-400"
+          >UDAYA TECHNOLOGY Co., Ltd.</span
+        >
+      </p>
       <p class="mt-0.5">{{ $t("version") }} 1.08</p>
     </div>
   </div>
@@ -92,7 +114,7 @@ const onSubmit = handleSubmit(async (values) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 188, 212, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 143, 57, 0.4);
   transition:
     background 0.2s,
     transform 0.1s;

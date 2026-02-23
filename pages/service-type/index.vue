@@ -1,39 +1,45 @@
 <script setup lang="ts">
-import ServiceTypeAddEditDrawer from "~/features/service-type/components/ServiceTypeAddEditDrawer.vue";
 import { useServiceType } from "~/features/service-type/service-type.composable";
-import type { ServiceTypeFormInput } from "~/features/service-type/service-type.schema";
-import type { ServiceType } from "~/features/service-type/service-type.types";
+import type { ServiceType } from "~/types";
+import { type ServiceTypeFormInput } from "~/utils/shared/schemas";
+import ServiceTypeAddEditDrawer from "./components/ServiceTypeAddEditDrawer.vue";
 
 // * Navigation Meta
 definePageMeta({ middleware: ["permission"], requiredModule: "Service Type" });
 
 // * State & Logic
-const { list, total, page, rowsPerPage, searchText, fetch, create, update, remove, toggle, isLoading } = useServiceType();
+const { items, total, isLoading, page, rowsPerPage, search, refresh, create, update, remove } = useServiceType();
 const { hasPermission } = usePermission();
 
-const showDrawer = ref(false);
-const selectedItem = ref<ServiceType | null>(null);
-const localSearch = ref("");
-
-const actionMenu = ref();
-const activeItem = ref<ServiceType | null>(null);
+// * UI State
+const showDrawer = ref(false),
+  selectedItem = ref<ServiceType | null>(null),
+  localSearch = ref(""),
+  selectedRows = ref<ServiceType[]>([]);
+const actionMenu = ref(),
+  activeItem = ref<ServiceType | null>(null);
 
 const actionItems = computed(() => [
   { label: "Edit", icon: "mdi:pencil-outline", visible: hasPermission("Service Type", "EDIT"), command: () => activeItem.value && handleEdit(activeItem.value) },
   { label: "Delete", icon: "mdi:delete-outline", visible: hasPermission("Service Type", "DELETE"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
 ]);
 
-// * Handlers
+const toggleActionMenu = (e: Event, i: ServiceType) => {
+  activeItem.value = i;
+  actionMenu.value.toggle(e);
+};
+
+// * Logic
 const onSearch = () => {
-  searchText.value = localSearch.value;
+  search.value = localSearch.value;
   page.value = 0;
 };
 const handleAdd = () => {
   selectedItem.value = null;
   showDrawer.value = true;
 };
-const handleEdit = (item: ServiceType) => {
-  selectedItem.value = item;
+const handleEdit = (i: ServiceType) => {
+  selectedItem.value = i;
   showDrawer.value = true;
 };
 const handleSave = async (v: ServiceTypeFormInput) => {
@@ -41,7 +47,7 @@ const handleSave = async (v: ServiceTypeFormInput) => {
   showDrawer.value = false;
 };
 
-onMounted(() => fetch());
+onMounted(() => refresh());
 </script>
 
 <template>
@@ -65,7 +71,7 @@ onMounted(() => fetch());
     <!-- Content -->
     <div class="flex-1 overflow-hidden bg-white dark:bg-zinc-950 rounded-xl border shadow-sm flex flex-col">
       <div class="flex-1 overflow-y-auto">
-        <DataTable :value="list" :loading="isLoading" class="p-datatable-sm" stripedRows>
+        <DataTable :value="items" :loading="isLoading" class="p-datatable-sm" stripedRows>
           <Column field="name" header="Name" class="font-bold text-[13px] px-4" />
           <Column field="nameOther" header="Name (Other)" class="text-[13px] text-zinc-500 px-4" />
           <Column header="Status" class="px-4">
@@ -78,15 +84,7 @@ onMounted(() => fetch());
           </Column>
           <Column header="Action" class="w-12 px-4">
             <template #body="{ data }">
-              <button
-                @click="
-                  (e) => {
-                    activeItem = data;
-                    actionMenu.toggle(e);
-                  }
-                "
-                class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-zinc-100 text-zinc-500 transition-colors"
-              >
+              <button @click="(e) => toggleActionMenu(e, data)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-zinc-100 text-zinc-500 transition-colors">
                 <Icon name="mdi:dots-vertical" class="w-5 h-5" />
               </button>
             </template>

@@ -1,6 +1,6 @@
 export default {
   darkMode: "class",
-  content: ["./components/**/*.vue", "./pages/**/*.vue", "./features/**/*.vue", "./layouts/**/*.vue"],
+  content: ["./components/**/*.vue", "./pages/**/*.vue", "./features/**/*.vue", "./layouts/**/*.vue", "./app.vue", "./error.vue"],
   theme: {
     extend: {
       colors: {
@@ -9,6 +9,9 @@ export default {
           accent: "var(--brand-accent)",
           sidebar: "var(--brand-sidebar-bg)",
         },
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
       },
     },
   },

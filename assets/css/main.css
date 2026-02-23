@@ -5,8 +5,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Global Typography ─── */
+html,
+body,
+.p-component,
+.p-inputtext,
+.p-textarea,
+.p-password input,
+.p-select-label,
+.p-button {
+  font-family: "Kantumruy Pro", sans-serif !important;
+}
+
 /* ── PrimeVue Aura input override (uses theme.css variables) ─── */
 .p-inputtext,
+.p-textarea,
 .p-password input {
   background: var(--input-bg) !important;
   border: 1px solid var(--input-border) !important;
@@ -19,6 +32,9 @@
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
+}
+.p-textarea {
+  min-height: 80px;
 }
 .p-password input {
   padding: 0.6rem 2.5rem 0.6rem 0.875rem !important;
@@ -44,4 +60,24 @@
   padding: var(--input-padding) !important;
   font-size: var(--input-font-size) !important;
   color: var(--input-text) !important;
+}
+
+/* ── Nuxt 3 Transitions ─── */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(4px) scale(0.99);
+}
+
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 0.3s ease;
+}
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
 }

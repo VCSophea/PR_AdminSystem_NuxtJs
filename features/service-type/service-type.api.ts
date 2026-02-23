@@ -1,16 +1,14 @@
-import type { ApiResponse } from "~/types/api";
-import type { ServiceType } from "./service-type.types";
+import { api } from "~/plugins/api";
+import type { ApiResponse, ServiceType } from "~/types";
 
-// * Service Type API Service
+// * Service Type API
 export const useServiceTypeApi = () => {
-  const { $api } = useNuxtApp();
   const base = "/service-type";
-
   return {
-    list: (params: any) => $api.post<ApiResponse<ServiceType[]>>(`${base}/list`, params),
-    create: (data: any) => $api.post(`${base}/create`, data),
-    update: (id: number, data: any) => $api.post(`${base}/update/${id}`, data),
-    remove: (id: number) => $api.post(`${base}/delete/${id}`),
-    toggleStatus: (id: number, status: boolean) => $api.post(`${base}/status/${id}`, { status }),
+    list: (p: any) => api.post<ApiResponse<ServiceType[]>>(`${base}/list`, p).then((r) => r.data),
+    create: (d: any) => api.post(`${base}/create`, d).then((r) => r.data),
+    update: (id: number, d: any) => api.post(`${base}/update/${id}`, d).then((r) => r.data),
+    remove: (id: number) => api.post(`${base}/delete/${id}`).then((r) => r.data),
+    toggleStatus: (id: number, s: boolean) => api.post(`${base}/status/${id}`, { status: s }).then((r) => r.data),
   };
 };

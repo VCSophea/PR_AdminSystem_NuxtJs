@@ -26,13 +26,15 @@ export function useAuth() {
 
       // * Fetch Profile
       const { body: userProfile } = await authApi.getProfile();
+      if (!userProfile?.id) throw new Error("Failed to load user profile");
+
       authStore.setAuth(userProfile, tokenCookie.value!);
 
       await navigateTo("/");
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login component error:", error);
-      return false;
+      throw error;
     } finally {
       isLoading.value = false;
     }
