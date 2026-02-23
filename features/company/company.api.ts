@@ -1,5 +1,5 @@
 import { api } from "~/plugins/api";
-import type { ApiResponse, Company, CompanyFilter } from "~/types";
+import type { ApiResponse, Company, CompanyFilter } from "~/utils/types";
 
 export function useCompanyApi() {
   return {

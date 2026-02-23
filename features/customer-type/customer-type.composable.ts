@@ -1,5 +1,5 @@
-import type { CustomerType } from "~/types";
 import { type CustomerTypeFormInput } from "~/utils/shared/schemas";
+import type { CustomerType } from "~/utils/types";
 import { useCustomerTypeApi } from "./customer-type.api";
 
 // * Customer Type Logic

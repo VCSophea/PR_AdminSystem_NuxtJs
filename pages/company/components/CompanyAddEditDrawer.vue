@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import type { Company } from "~/types";
 import { companySchema } from "~/utils/shared/schemas";
+import type { Company } from "~/utils/types";
 
 const activeTab = ref("overview");
 const props = defineProps<{ visible: boolean; company?: Company | null }>();

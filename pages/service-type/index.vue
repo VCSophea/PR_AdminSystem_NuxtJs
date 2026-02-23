@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useServiceType } from "~/features/service-type/service-type.composable";
-import type { ServiceType } from "~/types";
 import { type ServiceTypeFormInput } from "~/utils/shared/schemas";
+import type { ServiceType } from "~/utils/types";
 import ServiceTypeAddEditDrawer from "./components/ServiceTypeAddEditDrawer.vue";
 
 // * Navigation Meta

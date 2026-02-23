@@ -1,5 +1,5 @@
 import { api } from "~/plugins/api";
-import type { ApiResponse, ServiceType } from "~/types";
+import type { ApiResponse, ServiceType } from "~/utils/types";
 
 // * Service Type API
 export const useServiceTypeApi = () => {

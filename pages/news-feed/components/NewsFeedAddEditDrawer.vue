@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import type { NewsFeed } from "~/types";
 import { newsFeedSchema } from "~/utils/shared/schemas";
+import type { NewsFeed } from "~/utils/types";
 
 const props = defineProps<{ visible: boolean; item?: NewsFeed | null }>();
 const emit = defineEmits(["update:visible", "saved"]);

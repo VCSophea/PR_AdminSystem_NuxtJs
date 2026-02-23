@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useNewsFeed } from "~/features/news-feed/news-feed.composable";
-import type { NewsFeed } from "~/types";
 import { type NewsFeedFormInput } from "~/utils/shared/schemas";
+import type { NewsFeed } from "~/utils/types";
 import NewsFeedAddEditDrawer from "./components/NewsFeedAddEditDrawer.vue";
 
 // * Navigation Meta

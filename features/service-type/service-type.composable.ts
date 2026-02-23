@@ -1,5 +1,5 @@
-import type { ServiceType } from "~/types";
 import { type ServiceTypeFormInput } from "~/utils/shared/schemas";
+import type { ServiceType } from "~/utils/types";
 import { useServiceTypeApi } from "./service-type.api";
 
 // * Service Type Logic

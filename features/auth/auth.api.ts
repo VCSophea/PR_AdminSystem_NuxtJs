@@ -1,6 +1,6 @@
 // features/auth/auth.api.ts
 import { api } from "~/plugins/api";
-import type { LoginApiResponse, ProfileApiResponse } from "~/types";
+import type { LoginApiResponse, ProfileApiResponse } from "~/utils/types";
 
 export function useAuthApi() {
   return {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import type { CustomerType } from "~/types";
 import { customerTypeSchema } from "~/utils/shared/schemas";
+import type { CustomerType } from "~/utils/types";
 
 const props = defineProps<{ visible: boolean; item?: CustomerType | null }>();
 const emit = defineEmits(["update:visible", "saved"]);

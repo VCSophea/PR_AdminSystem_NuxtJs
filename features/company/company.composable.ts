@@ -1,5 +1,5 @@
-import type { Company } from "~/types";
 import { type CompanyFormInput } from "~/utils/shared/schemas";
+import type { Company } from "~/utils/types";
 import { useCompanyApi } from "./company.api";
 
 // * Company Logic

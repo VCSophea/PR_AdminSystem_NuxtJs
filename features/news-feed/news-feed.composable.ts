@@ -1,5 +1,5 @@
-import type { NewsFeed } from "~/types";
 import { type NewsFeedFormInput } from "~/utils/shared/schemas";
+import type { NewsFeed } from "~/utils/types";
 import { useNewsFeedApi } from "./news-feed.api";
 
 // * News Feed Logic

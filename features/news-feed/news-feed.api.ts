@@ -1,5 +1,5 @@
 import { api } from "~/plugins/api";
-import type { ApiResponse, NewsFeed } from "~/types";
+import type { ApiResponse, NewsFeed } from "~/utils/types";
 
 // * News Feed API
 export const useNewsFeedApi = () => {

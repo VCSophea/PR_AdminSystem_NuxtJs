@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCustomerType } from "~/features/customer-type/customer-type.composable";
-import type { CustomerType } from "~/types";
 import { type CustomerTypeFormInput } from "~/utils/shared/schemas";
+import type { CustomerType } from "~/utils/types";
 import CustomerTypeAddEditDrawer from "./components/CustomerTypeAddEditDrawer.vue";
 
 // * Navigation Meta

@@ -1,5 +1,5 @@
 import { api } from "~/plugins/api";
-import type { ApiResponse, CustomerType } from "~/types";
+import type { ApiResponse, CustomerType } from "~/utils/types";
 
 // * Customer Type API
 export const useCustomerTypeApi = () => {

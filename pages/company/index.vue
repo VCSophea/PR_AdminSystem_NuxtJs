@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCompany } from "~/features/company/company.composable";
-import type { Company } from "~/types";
 import { type CompanyFormInput } from "~/utils/shared/schemas";
+import type { Company } from "~/utils/types";
 import CompanyAddEditDrawer from "./components/CompanyAddEditDrawer.vue";
 
 definePageMeta({ middleware: ["permission"], requiredModule: "Company" });
