@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
+
   compatibilityDate: "2025-07-15",
   srcDir: ".",
   devtools: { enabled: true },
@@ -10,6 +12,8 @@ export default defineNuxtConfig({
   },
 
   app: {
+    baseURL: "/admin-system/",
+
     head: {
       titleTemplate: "%s - Nuxt Admin System",
       title: "Dashboard",
@@ -20,7 +24,14 @@ export default defineNuxtConfig({
     layoutTransition: { name: "layout", mode: "out-in" },
   },
 
-  modules: ["@primevue/nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "nuxt-auth-utils", "@nuxtjs/i18n", "@nuxt/icon", "@nuxtjs/google-fonts"],
+  router: {
+    options: {
+      hashMode: false,
+    },
+  },
+
+  // * Internal Modules
+  modules: ["@nuxt/icon", "@nuxtjs/google-fonts", "@nuxtjs/i18n", "@nuxtjs/tailwindcss", "@pinia/nuxt", "@primevue/nuxt-module", "nuxt-auth-utils"],
 
   googleFonts: {
     families: {
