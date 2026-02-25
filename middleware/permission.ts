@@ -1,6 +1,6 @@
 // middleware/permission.ts
 export default defineNuxtRouteMiddleware((to) => {
-  const { hasPermission } = usePermission();
+  const { hasPermission, allowView, allowAdd, allowEdit, allowDelete, allowApprove, allowDisapprove, allowPick } = usePermission();
   const requiredModule = to.meta.requiredModule as string | undefined;
 
   // * Guard: skip if auth hasn't settled yet (prevents false 403 on refresh)

@@ -15,7 +15,6 @@ export const useAuthStore = defineStore("auth", () => {
   const moduleTypeList = computed(() => user.value?.moduleTypeList || []);
   const isLoggedIn = computed(() => !!user.value && !!accessToken.value);
   const fullName = computed(() => (user.value ? `${user.value.firstName} ${user.value.lastName}` : ""));
-  const isSuperAdmin = computed(() => user.value?.isSuperAdmin === 1);
 
   // * Actions
   const setAuth = (newUser: AuthUser, token: string) => {
@@ -28,5 +27,5 @@ export const useAuthStore = defineStore("auth", () => {
     accessToken.value = "";
   };
 
-  return { user, accessToken, authReady, moduleTypeList, isLoggedIn, fullName, isSuperAdmin, setAuth, clearAuth };
+  return { user, accessToken, authReady, moduleTypeList, isLoggedIn, fullName, setAuth, clearAuth };
 });

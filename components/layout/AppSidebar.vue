@@ -1,9 +1,8 @@
-<!-- components/layout/AppSidebar.vue -->
 <script setup lang="ts">
-// * Imports & Stores
+import Menu from "./Menu.vue";
+
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
-const { hasPermission } = usePermission();
 const { logout } = useAuth();
 const { isDark } = useTheme();
 
@@ -12,53 +11,6 @@ const searchQuery = ref("");
 const isHovered = ref(false);
 const showProfileMenu = ref(false);
 const isExpanded = computed(() => !layoutStore.isSidebarCollapsed || isHovered.value);
-
-// * Navigation Topology
-const menuGroups = [
-  {
-    title: "Platform",
-    items: [
-      { label: "Dashboard", icon: "mdi:view-dashboard", path: "/", type: "Dashboard" },
-      { label: "Lifecycle", icon: "mdi:refresh", path: "/lifecycle", type: "Dashboard" },
-      { label: "Analytics", icon: "mdi:chart-bar", path: "/analytics", type: "Dashboard" },
-    ],
-  },
-  {
-    title: "Documents",
-    items: [
-      { label: "Company", icon: "mdi:office-building", path: "/company", type: "Company" },
-      { label: "News Feed", icon: "mdi:newspaper", path: "/news-feed", type: "NewsFeed" },
-      { label: "FAQ", icon: "mdi:help-circle", path: "/faq", type: "FAQ" },
-    ],
-  },
-  {
-    title: "Vehicle & Policy",
-    items: [
-      { label: "Vehicle Type", icon: "mdi:car", path: "/vehicle-type", type: "VehicleType" },
-      { label: "Coverage Category", icon: "mdi:shield-check", path: "/coverage-category", type: "CoverageCategory" },
-      { label: "Price Type", icon: "mdi:currency-usd", path: "/price-type", type: "PriceType" },
-    ],
-  },
-  {
-    title: "System Setting",
-    items: [
-      { label: "Customer", icon: "mdi:account-group", path: "/customer", type: "Customer" },
-      { label: "Customer Type", icon: "mdi:account-badge", path: "/customer-type", type: "CustomerType" },
-      { label: "Service Type", icon: "mdi:tools", path: "/service-type", type: "ServiceType" },
-      { label: "Settings", icon: "mdi:cog", path: "/settings", type: "Dashboard" },
-    ],
-  },
-];
-
-// * Filter Engine
-const filteredGroups = computed(() =>
-  menuGroups
-    .map((g) => ({
-      ...g,
-      items: g.items.filter((i) => hasPermission(i.type) && i.label.toLowerCase().includes(searchQuery.value.toLowerCase())),
-    }))
-    .filter((g) => g.items.length > 0),
-);
 </script>
 
 <template>
@@ -87,39 +39,15 @@ const filteredGroups = computed(() =>
     </div>
 
     <!-- Menu Search Input -->
-    <div class="px-4 mt-6 shrink-0 overflow-hidden">
-      <div class="relative flex items-center group">
-        <Icon name="mdi:magnify" class="absolute left-3 w-4 h-4 text-zinc-400 dark:text-zinc-500 transition-colors group-focus-within:text-[var(--color-primary)]" />
-        <input v-model="searchQuery" type="text" placeholder="Search menu..." class="w-full bg-white/70 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg py-1.5 pl-9 pr-3 text-xs text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] transition-all duration-300" :class="!isExpanded ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'" />
-        <!-- Collapsed Search Icon (Overlay when collapsed) -->
-        <div v-if="!isExpanded" class="absolute inset-0 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900 flex items-center justify-center cursor-pointer transition-all duration-300" @click="layoutStore.toggleSidebar">
-          <Icon name="mdi:magnify" class="w-5 h-5 text-zinc-500" />
-        </div>
+    <div class="px-4 mt-6 shrink-0 overflow-hidden relative">
+      <AppFormField v-model="searchQuery" icon="mdi:magnify" placeholder="Search menu..." glass :class="!isExpanded ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'" />
+      <div v-if="!isExpanded" class="absolute inset-0 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900 flex items-center justify-center cursor-pointer transition-all duration-300 mx-4" @click="layoutStore.toggleSidebar">
+        <Icon name="mdi:magnify" class="w-5 h-5 text-zinc-500" />
       </div>
     </div>
 
     <!-- Grouped Navigation -->
-    <nav class="flex-1 overflow-y-auto py-6 px-3 scrollbar-hide space-y-7">
-      <div v-for="group in filteredGroups" :key="group.title" class="space-y-1.5">
-        <!-- Group Title -->
-        <h3 class="px-3 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.15em] mb-2.5 transition-all duration-300 overflow-hidden whitespace-nowrap" :class="!isExpanded ? 'opacity-0 h-0 my-0' : 'opacity-100 h-auto my-0'">
-          {{ group.title }}
-        </h3>
-
-        <!-- Group Items -->
-        <div class="space-y-0.5">
-          <NuxtLink v-for="item in group.items" :key="item.path" :to="item.path" class="nav-link group flex items-center rounded-lg transition-all duration-200 relative overflow-hidden h-9" :class="[!isExpanded ? 'justify-center w-9 mx-auto px-0' : 'gap-3 px-3']">
-            <Icon :name="item.icon" class="w-4.5 h-4.5 shrink-0 transition-colors duration-200" :class="['text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-200 group-[.router-link-active]:text-[var(--sidebar-text-active)]']" />
-            <span class="text-[13px] font-medium whitespace-nowrap transition-all duration-300 flex-1" :class="!isExpanded ? 'opacity-0 invisible w-0 -translate-x-2' : 'opacity-100 visible translate-x-0 ml-1'">
-              {{ item.label }}
-            </span>
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- No Results -->
-      <div v-if="filteredGroups.length === 0" class="px-3 text-xs text-zinc-400 italic">No matching menus found</div>
-    </nav>
+    <Menu :is-expanded="isExpanded" :search-query="searchQuery" />
 
     <!-- Bottom Profile -->
     <div class="px-4 py-4 border-t border-[var(--sidebar-border)] transition-colors duration-300" :class="isDark ? 'bg-[var(--sidebar-bg)]' : 'bg-transparent'">
@@ -147,25 +75,3 @@ const filteredGroups = computed(() =>
     </div>
   </aside>
 </template>
-
-<style scoped>
-.nav-link {
-  color: var(--sidebar-text);
-}
-.nav-link:hover {
-  background-color: var(--sidebar-accent);
-  color: var(--sidebar-text-active);
-}
-.nav-link.router-link-active {
-  background-color: var(--sidebar-accent);
-  color: var(--sidebar-text-active);
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>

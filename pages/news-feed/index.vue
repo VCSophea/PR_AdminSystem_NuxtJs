@@ -5,11 +5,11 @@ import type { NewsFeed } from "~/utils/types";
 import NewsFeedAddEditDrawer from "./components/NewsFeedAddEditDrawer.vue";
 
 // * Navigation Meta
-definePageMeta({ middleware: ["permission"], requiredModule: "News Feed" });
+definePageMeta({ middleware: ["permission"], requiredModule: "news-feed" });
 
 // * State & Logic
 const { items, total, isLoading, page, rowsPerPage, search, refresh, create, update, remove } = useNewsFeed();
-const { hasPermission } = usePermission();
+const { hasPermission, allowView, allowAdd, allowEdit, allowDelete, allowApprove, allowDisapprove, allowPick } = usePermission();
 
 // * UI State
 const showDrawer = ref(false),
@@ -20,8 +20,8 @@ const actionMenu = ref(),
   activeItem = ref<NewsFeed | null>(null);
 
 const actionItems = computed(() => [
-  { label: "Edit", icon: "mdi:pencil-outline", visible: hasPermission("News Feed", "EDIT"), command: () => activeItem.value && handleEdit(activeItem.value) },
-  { label: "Delete", icon: "mdi:delete-outline", visible: hasPermission("News Feed", "DELETE"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
+  { label: "Edit", icon: "mdi:pencil-outline", visible: allowEdit("news-feed"), command: () => activeItem.value && handleEdit(activeItem.value) },
+  { label: "Delete", icon: "mdi:delete-outline", visible: allowDelete("news-feed"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
 ]);
 
 const toggleActionMenu = (e: Event, i: NewsFeed) => {
@@ -64,7 +64,7 @@ onMounted(() => refresh());
           <Icon name="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input v-model="localSearch" @keyup.enter="onSearch" type="text" placeholder="Search news..." class="w-full bg-white dark:bg-zinc-900 border rounded-lg py-2 pl-9 pr-3 text-sm focus:ring-1 focus:ring-[var(--color-primary)] transition-all" />
         </div>
-        <button v-if="hasPermission('News Feed', 'ADD')" @click="handleAdd" class="h-10 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"><Icon name="mdi:plus" class="w-4 h-4" /> Add News</button>
+        <button v-if="allowAdd('news-feed')" @click="handleAdd" class="h-10 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"><Icon name="mdi:plus" class="w-4 h-4" /> Add News</button>
       </div>
     </div>
 

@@ -22,7 +22,6 @@ export interface ModuleType {
 
 export interface AuthUser {
   id: number;
-  isSuperAdmin: number;
   firstName: string;
   lastName: string;
   username: string;

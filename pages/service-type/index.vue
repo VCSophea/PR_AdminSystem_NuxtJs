@@ -5,11 +5,11 @@ import type { ServiceType } from "~/utils/types";
 import ServiceTypeAddEditDrawer from "./components/ServiceTypeAddEditDrawer.vue";
 
 // * Navigation Meta
-definePageMeta({ middleware: ["permission"], requiredModule: "Service Type" });
+definePageMeta({ middleware: ["permission"], requiredModule: "service-type" });
 
 // * State & Logic
 const { items, total, isLoading, page, rowsPerPage, search, refresh, create, update, remove } = useServiceType();
-const { hasPermission } = usePermission();
+const { hasPermission, allowView, allowAdd, allowEdit, allowDelete, allowApprove, allowDisapprove, allowPick } = usePermission();
 
 // * UI State
 const showDrawer = ref(false),
@@ -20,8 +20,8 @@ const actionMenu = ref(),
   activeItem = ref<ServiceType | null>(null);
 
 const actionItems = computed(() => [
-  { label: "Edit", icon: "mdi:pencil-outline", visible: hasPermission("Service Type", "EDIT"), command: () => activeItem.value && handleEdit(activeItem.value) },
-  { label: "Delete", icon: "mdi:delete-outline", visible: hasPermission("Service Type", "DELETE"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
+  { label: "Edit", icon: "mdi:pencil-outline", visible: allowEdit("service-type"), command: () => activeItem.value && handleEdit(activeItem.value) },
+  { label: "Delete", icon: "mdi:delete-outline", visible: allowDelete("service-type"), class: "text-red-500", command: () => activeItem.value && remove(activeItem.value.id) },
 ]);
 
 const toggleActionMenu = (e: Event, i: ServiceType) => {
@@ -64,7 +64,7 @@ onMounted(() => refresh());
           <Icon name="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input v-model="localSearch" @keyup.enter="onSearch" type="text" placeholder="Search..." class="w-full bg-white dark:bg-zinc-900 border rounded-lg py-2 pl-9 pr-3 text-sm focus:ring-1 focus:ring-[var(--color-primary)] transition-all" />
         </div>
-        <button v-if="hasPermission('Service Type', 'ADD')" @click="handleAdd" class="h-10 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"><Icon name="mdi:plus" class="w-4 h-4" /> Add</button>
+        <button v-if="allowAdd('service-type')" @click="handleAdd" class="h-10 px-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"><Icon name="mdi:plus" class="w-4 h-4" /> Add</button>
       </div>
     </div>
 

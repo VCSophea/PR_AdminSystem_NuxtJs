@@ -74,7 +74,7 @@ export default defineNuxtConfig({
     { path: "./features", pathPrefix: false },
   ],
 
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css", "primeicons/primeicons.css"],
 
   runtimeConfig: {
     public: {

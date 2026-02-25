@@ -1,4 +1,3 @@
-// plugins/auth.init.ts
 import { useAuthApi } from "~/features/auth/auth.api";
 
 export default defineNuxtPlugin(async () => {
