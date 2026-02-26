@@ -13,11 +13,11 @@ export type LoginFormInput = z.infer<ReturnType<typeof createLoginSchema>>;
 export const companySchema = z.object({
   name: z.string().min(1, "Company name is required"),
   description: z.string().optional(),
-  contactPerson: z.string().optional(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phone: z.string().optional(),
+  contactPerson: z.string().min(1, "Contact person is required"),
+  email: z.string().email("Invalid email").min(1, "Email is required"),
+  phone: z.string().min(1, "Phone is required"),
   isActive: z.any().optional(),
-  logo: z.any().optional(),
+  logo: z.any().refine((val) => !!val, "Logo is required"),
 });
 export type CompanyFormInput = z.infer<typeof companySchema>;
 

@@ -16,6 +16,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["update:modelValue"]);
+const { t } = useI18n();
 
 // * Field Sync
 const field = props.name ? useField<any>(() => props.name!) : null;
@@ -38,13 +39,14 @@ const bindings = computed(() => {
     modelValue: model.value,
     "onUpdate:modelValue": (v: any) => (model.value = v),
     invalid: !!field?.errorMessage.value,
-    placeholder: props.placeholder,
+    placeholder: props.placeholder || t("enter"),
     fluid: true,
+    rounded: "large",
     class: "w-full",
     ...(props.type === "textarea" ? { rows: props.rows ?? 3, autoResize: true } : {}),
     ...(props.type === "password" ? { feedback: false, toggleMask: true } : {}),
-    ...(props.type === "select" ? { options: props.options, optionLabel: props.optionLabel, optionValue: props.optionValue } : {}),
-    ...(props.type === "date" ? { dateFormat: "yy-mm-dd", showIcon: true, iconDisplay: "input" } : {}),
+    ...(props.type === "select" ? { options: props.options, optionLabel: props.optionLabel, optionValue: props.optionValue, placeholder: props.placeholder || t("select") } : {}),
+    ...(props.type === "date" ? { dateFormat: "yy-mm-dd", showIcon: true, iconDisplay: "input", placeholder: props.placeholder || t("select") } : {}),
     ...rest,
   };
 });
@@ -64,7 +66,7 @@ const bindings = computed(() => {
       <component v-else :is="component" v-bind="bindings" />
 
       <!-- * Label Rendering -->
-      <label v-if="label" :for="name" class="text-zinc-500"> {{ label }}<span v-if="required" class="text-red-500">*</span> </label>
+      <label v-if="label" :for="name" class="text-zinc-500"> {{ label }}<span v-if="required" class="text-red-500"> *</span> </label>
     </component>
 
     <!-- * Error Message -->

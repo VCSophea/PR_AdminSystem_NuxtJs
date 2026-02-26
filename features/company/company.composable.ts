@@ -2,7 +2,6 @@ import { type CompanyFormInput } from "~/utils/shared/schemas";
 import type { Company } from "~/utils/types";
 import { useCompanyApi } from "./company.api";
 
-// * Company Logic
 export const useCompany = () => {
   const api = useCompanyApi();
   const companies = ref<Company[]>([]);
@@ -11,19 +10,11 @@ export const useCompany = () => {
     rowsPerPage = ref(10),
     searchText = ref("");
 
-  // * Async Data Pulse
-  const { data, status, refresh } = useAsyncData(
-    "companies",
-    () =>
-      api.list({
-        page: page.value + 1,
-        rowsPerPage: rowsPerPage.value,
-        searchText: searchText.value,
-      }),
-    { watch: [page, rowsPerPage, searchText] },
-  );
+  // * Data Fetching
+  const q = computed(() => ({ page: page.value + 1, rowsPerPage: rowsPerPage.value, searchText: searchText.value }));
+  const { data, status, refresh } = useAsyncData("companies", () => api.list(q.value), { watch: [q] });
 
-  // * Sync State
+  // * State Sync
   watch(
     data,
     (v) => {
@@ -35,22 +26,10 @@ export const useCompany = () => {
     { immediate: true },
   );
 
-  const create = async (v: CompanyFormInput) => {
-    const fd = new FormData();
-    Object.entries(v).forEach(([k, val]) => {
-      if (val !== undefined) fd.append(k, val as any);
-    });
-    await api.create(fd);
-    await refresh();
-  };
-  const remove = async (id: number) => {
-    await api.remove(id);
-    await refresh();
-  };
-  const toggleStatus = async (id: number, s: boolean) => {
-    await api.toggleStatus(id, s);
-    await refresh();
-  };
+  // * Actions
+  const create = async (v: CompanyFormInput) => (await api.create(v), refresh());
+  const remove = async (id: number) => (await api.remove(id), refresh());
+  const toggleStatus = async (id: number, s: boolean) => (await api.toggleStatus(id, s), refresh());
 
   return { companies, totalCount, page, rowsPerPage, searchText, refresh, create, remove, toggleStatus, isLoading: computed(() => status.value === "pending") };
 };

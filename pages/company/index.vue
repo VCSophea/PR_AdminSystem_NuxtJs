@@ -3,43 +3,24 @@ import { useCompany } from "~/features/company/company.composable";
 import { MENU_CONSTANT } from "~/utils/menu";
 import { type CompanyFormInput } from "~/utils/shared/schemas";
 import type { Company } from "~/utils/types";
-import CompanyAddEditDrawer from "./components/CompanyAddEditDrawer.vue";
+import AddEdit from "./components/AddEdit.vue";
 
-const REQUIRED_MODULE = MENU_CONSTANT[1]?.items?.[0]?.moduleName || "";
-definePageMeta({ middleware: ["permission"], requiredModule: REQUIRED_MODULE });
+const MOD = MENU_CONSTANT[1]?.items?.[0]?.moduleName || "";
+definePageMeta({ middleware: ["permission"], requiredModule: MOD });
 
 const { companies, totalCount, page, rowsPerPage, searchText, refresh, create, remove, toggleStatus, isLoading } = useCompany();
 const { allowAdd, allowEdit, allowDelete, allowView } = usePermission();
 
-const showDrawer = ref(false);
-const selectedCompany = ref<Company | null>(null);
-const selectedRows = ref<Company[]>([]);
-const localSearch = ref("");
+// * Reactive State
+const showDrawer = ref(false),
+  selectedCompany = ref<Company | null>(null),
+  localSearch = ref("");
 
 // * Logic Handlers
-const onSearch = () => {
-  searchText.value = localSearch.value;
-  page.value = 0;
-};
-const handleAdd = () => {
-  selectedCompany.value = null;
-  showDrawer.value = true;
-};
-const handleEdit = (c: Company) => {
-  selectedCompany.value = c;
-  showDrawer.value = true;
-};
-const handleStatusChange = async (c: Company) => {
-  try {
-    await toggleStatus(c.id, Boolean(c.isActive));
-  } catch (error) {
-    console.error("Failed to toggle status", error);
-  }
-};
-const handleSave = async (v: CompanyFormInput) => {
-  await create(v);
-  showDrawer.value = false;
-};
+const onSearch = () => ((searchText.value = localSearch.value), (page.value = 0));
+const handleAdd = () => ((selectedCompany.value = null), (showDrawer.value = true));
+const handleEdit = (c: Company) => ((selectedCompany.value = c), (showDrawer.value = true));
+const handleSave = async (v: CompanyFormInput) => (await create(v), (showDrawer.value = false));
 
 onMounted(() => refresh());
 </script>
@@ -52,7 +33,7 @@ onMounted(() => refresh());
         <AppFormField v-model="localSearch" label="Company Name" placeholder="Search..." class="flex-1" @keyup.enter="onSearch" />
         <Button icon="pi pi-search" @click="onSearch" class="!h-10 !w-10 shrink-0" />
       </div>
-      <Button v-if="allowAdd(REQUIRED_MODULE)" label="Add New" icon="pi pi-plus" size="small" @click="handleAdd" class="!px-5 !h-10" />
+      <Button v-if="allowAdd(MOD)" label="Add New" icon="pi pi-plus" size="small" @click="handleAdd" class="!px-5 !h-10" />
     </div>
 
     <!-- * Data Table Area -->
@@ -67,7 +48,7 @@ onMounted(() => refresh());
         <Column header="Logo" headerStyle="width: 4rem" class="text-center">
           <template #body="{ data }">
             <div class="w-9 h-9 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden bg-white dark:bg-zinc-950 mx-auto">
-              <img v-if="data.logo" :src="data.logo" class="w-full h-full object-cover" />
+              <Image v-if="data.logo" :src="getImageUrl(data.logo)" imageClass="w-full h-full object-cover" preview />
               <Icon v-else name="mdi:office-building" class="w-4.5 h-4.5 text-zinc-300" />
             </div>
           </template>
@@ -81,25 +62,25 @@ onMounted(() => refresh());
 
         <Column header="Contact Person" field="contactPerson" sortable>
           <template #body="{ data }">
-            <span class="text-[12px]">{{ data.contactPerson }}</span>
+            <span class="text-[12px] text-zinc-600 dark:text-zinc-400">{{ data.contactPerson }}</span>
           </template>
         </Column>
 
         <Column header="Email" field="email" sortable>
           <template #body="{ data }">
-            <span class="text-[12px] text-zinc-600 dark:text-zinc-400 font-medium">{{ data.email }}</span>
+            <span class="text-[12px] text-blue-600 dark:text-blue-400 font-medium">{{ data.email }}</span>
           </template>
         </Column>
 
-        <Column header="Phone Number" field="phone" sortable>
+        <Column header="Phone" field="phone" sortable>
           <template #body="{ data }">
-            <span class="text-[12px] font-mono">{{ data.phone }}</span>
+            <span class="text-[12px] font-mono text-zinc-600 dark:text-zinc-400">{{ data.phone }}</span>
           </template>
         </Column>
 
         <Column header="Status" field="isActive" class="text-center">
           <template #body="{ data }">
-            <ToggleSwitch v-model="data.isActive" @change="handleStatusChange(data)" size="small" />
+            <ToggleSwitch v-model="data.isActive" @change="toggleStatus(data.id, Boolean(data.isActive))" size="small" />
           </template>
         </Column>
 
@@ -116,18 +97,19 @@ onMounted(() => refresh());
           <template #body="{ data }">
             <div class="flex items-center justify-center gap-1">
               <Button
-                v-if="allowView(REQUIRED_MODULE)"
+                v-if="allowView(MOD)"
                 icon="pi pi-eye"
-                text
+                size="small"
+                severity="info"
+                raised
                 rounded
-                severity="secondary"
                 @click="
                   selectedCompany = data;
                   showDrawer = true;
                 "
               />
-              <Button v-if="allowEdit(REQUIRED_MODULE)" icon="pi pi-pencil" text rounded severity="info" @click="handleEdit(data)" />
-              <Button v-if="allowDelete(REQUIRED_MODULE)" icon="pi pi-trash" text rounded severity="danger" @click="remove(data.id)" />
+              <Button v-if="allowEdit(MOD)" icon="pi pi-pencil" size="small" severity="warn" raised rounded @click="handleEdit(data)" />
+              <Button v-if="allowDelete(MOD)" icon="pi pi-trash" size="small" severity="danger" raised rounded @click="remove(data.id)" />
             </div>
           </template>
         </Column>
@@ -140,11 +122,11 @@ onMounted(() => refresh());
         </template>
       </DataTable>
 
-      <AppDataTablePagination v-model:page="page" v-model:rowsPerPage="rowsPerPage" :total="totalCount" :totalSelected="selectedRows.length" />
+      <AppDataTablePagination v-model:page="page" v-model:rowsPerPage="rowsPerPage" :total="totalCount" />
     </div>
 
     <!-- * Drawer -->
-    <CompanyAddEditDrawer v-model:visible="showDrawer" :company="selectedCompany" @saved="handleSave" />
+    <AddEdit v-model:visible="showDrawer" :company="selectedCompany" @saved="handleSave" />
   </div>
 </template>
 

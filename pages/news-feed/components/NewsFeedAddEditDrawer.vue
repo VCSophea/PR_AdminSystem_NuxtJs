@@ -26,7 +26,7 @@ const close = () => emit("update:visible", false);
 </script>
 
 <template>
-  <Drawer :visible="visible" @update:visible="close" position="right" class="!w-full md:!w-[500px] glass-drawer" header="News Feed">
+  <Drawer :visible="visible" @update:visible="close" position="right" class="!w-full md:!w-[500px]" header="News Feed">
     <form @submit="onSubmit" class="flex flex-col h-full space-y-6">
       <div class="flex-1 space-y-5">
         <AppFormField name="title" label="Title" required placeholder="Enter news title" icon="mdi:newspaper" iconPosition="left" />
@@ -48,19 +48,3 @@ const close = () => emit("update:visible", false);
     </form>
   </Drawer>
 </template>
-
-<style scoped>
-.glass-drawer {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(var(--glass-blur)) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-  border-left: 1px solid var(--glass-border) !important;
-}
-:deep(.p-drawer-content) {
-  background: transparent !important;
-}
-:deep(.p-drawer-header) {
-  background: transparent !important;
-  border-bottom: 1px solid var(--glass-border);
-}
-</style>

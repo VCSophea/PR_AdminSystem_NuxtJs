@@ -7,5 +7,7 @@
   "placeholder_password": "Enter Password",
   "login_button": "LOGIN",
   "powered_by": "Powered by",
-  "version": "Version"
+  "version": "Version",
+  "enter": "Enter",
+  "select": "Select"
 }
